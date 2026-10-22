@@ -1,14 +1,13 @@
 using System.Windows;
-using Winddy.Services;
+using Wpf.Ui.Controls;
 
 namespace Winddy.Views;
 
-public partial class ConfirmClearWindow : Window
+public partial class ConfirmClearWindow : FluentWindow
 {
     public ConfirmClearWindow()
     {
         InitializeComponent();
-        SourceInitialized += (_, _) => Theme.StyleWindow(this);
     }
 
     public bool DontAskAgain => DontAsk.IsChecked == true;

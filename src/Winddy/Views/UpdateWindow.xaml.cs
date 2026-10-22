@@ -4,7 +4,7 @@ using Winddy.Services;
 
 namespace Winddy.Views;
 
-public partial class UpdateWindow : Window
+public partial class UpdateWindow : Wpf.Ui.Controls.FluentWindow
 {
     private readonly App _app;
     private readonly UpdateInfo _info;
@@ -14,7 +14,6 @@ public partial class UpdateWindow : Window
         _app = app;
         _info = info;
         InitializeComponent();
-        SourceInitialized += (_, _) => Theme.StyleWindow(this);
         VersionsText.Text = Loc.T("UpdateVersions", info.Version.ToString(3), Updater.CurrentVersion.ToString(3));
         NotesText.Text = string.IsNullOrWhiteSpace(info.Notes) ? "—" : info.Notes.Trim();
         if (info.DownloadUrl == null) InstallButton.Content = Loc.T("OpenReleasePage");

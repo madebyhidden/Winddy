@@ -7,7 +7,7 @@ using Winddy.Services;
 namespace Winddy.Views;
 
 /// <summary>Edits an item's text, and for pinned items also its title and key.</summary>
-public partial class ItemEditorWindow : Window
+public partial class ItemEditorWindow : Wpf.Ui.Controls.FluentWindow
 {
     private readonly HistoryStore _store;
     private readonly HistoryItem _item;
@@ -17,7 +17,6 @@ public partial class ItemEditorWindow : Window
         _store = store;
         _item = item;
         InitializeComponent();
-        SourceInitialized += (_, _) => Theme.StyleWindow(this);
 
         PinFields.Visibility = item.IsPinned ? Visibility.Visible : Visibility.Collapsed;
         if (item.IsPinned)

@@ -29,8 +29,11 @@ public sealed class AppSettings
         "Bitwarden Clipboard",
     };
 
+    /// <summary>Data folder; WINDDY_DATA_DIR overrides it (used by UI snapshot runs).</summary>
     public static string Directory { get; } =
-        Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Winddy");
+        Environment.GetEnvironmentVariable("WINDDY_DATA_DIR") is { Length: > 0 } custom
+            ? custom
+            : Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Winddy");
 
     private static string FilePath => Path.Combine(Directory, "settings.json");
 

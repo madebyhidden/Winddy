@@ -618,6 +618,8 @@ public partial class PopupWindow : Window
         OpenPreview();
     }
 
+    internal void OpenPreviewForSnapshot() => OpenPreview();
+
     private void OpenPreview()
     {
         if (_selected == null || !IsVisible) return;

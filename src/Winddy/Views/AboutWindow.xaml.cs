@@ -1,25 +1,18 @@
-using System.Reflection;
 using System.Windows;
-using System.Windows.Navigation;
+using Wpf.Ui.Controls;
 using Winddy.Services;
 
 namespace Winddy.Views;
 
-public partial class AboutWindow : Window
+public partial class AboutWindow : FluentWindow
 {
     public AboutWindow()
     {
         InitializeComponent();
-        SourceInitialized += (_, _) => Theme.StyleWindow(this);
-        var version = Assembly.GetExecutingAssembly().GetName().Version;
-        VersionText.Text = Loc.T("Version", version == null ? "1.0" : $"{version.Major}.{version.Minor}.{version.Build}");
+        VersionText.Text = Loc.T("Version", Updater.CurrentVersion.ToString(3));
     }
 
-    private void Link_RequestNavigate(object sender, RequestNavigateEventArgs e)
-    {
-        Links.Open(e.Uri.AbsoluteUri);
-        e.Handled = true;
-    }
+    private void Repo_Click(object sender, RoutedEventArgs e) => Links.Open($"https://github.com/{Updater.Repository}");
 
-    private void Close_Click(object sender, RoutedEventArgs e) => Close();
+    private void Maccy_Click(object sender, RoutedEventArgs e) => Links.Open("https://github.com/p0deje/Maccy");
 }

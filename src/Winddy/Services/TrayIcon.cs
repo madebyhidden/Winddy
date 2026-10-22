@@ -1,6 +1,9 @@
 using System;
 using System.Drawing;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
+using System.Windows.Interop;
 using Winddy.Models;
 using Forms = System.Windows.Forms;
 
@@ -16,8 +19,9 @@ public sealed class TrayIcon : IDisposable
     private readonly Forms.NotifyIcon _icon;
     private readonly Icon _normal;
     private readonly Icon _paused;
-    private readonly Forms.ToolStripMenuItem _pauseItem;
-    private readonly Forms.ToolStripMenuItem _stopStackItem;
+    private readonly ContextMenu _menu;
+    private readonly MenuItem _pauseItem;
+    private readonly MenuItem _stopStackItem;
     private string _recent = "";
 
     public TrayIcon(App app)
@@ -26,24 +30,40 @@ public sealed class TrayIcon : IDisposable
         _normal = LoadIcon("Winddy.ico");
         _paused = LoadIcon("WinddyPaused.ico");
 
-        var menu = new Forms.ContextMenuStrip();
-        menu.Items.Add(Loc.T("Open"), null, (_, _) => _app.Popup.ShowPopup(fromTray: true));
-        menu.Items.Add(new Forms.ToolStripSeparator());
-        _pauseItem = new Forms.ToolStripMenuItem(Loc.T("Pause"), null, (_, _) => _app.TogglePause());
-        menu.Items.Add(_pauseItem);
-        menu.Items.Add(Loc.T("IgnoreNext"), null, (_, _) => _app.IgnoreNextCopy());
-        _stopStackItem = new Forms.ToolStripMenuItem(Loc.T("StopPasteStack"), null, (_, _) => _app.PasteStack.Stop()) { Visible = false };
-        menu.Items.Add(_stopStackItem);
-        menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add(Loc.T("Preferences"), null, (_, _) => _app.ShowSettings());
-        menu.Items.Add(Loc.T("CheckForUpdatesMenu"), null, (_, _) => _app.CheckForUpdatesNow());
-        menu.Items.Add(Loc.T("About"), null, (_, _) => _app.ShowAbout());
-        menu.Items.Add(new Forms.ToolStripSeparator());
-        menu.Items.Add(Loc.T("Quit"), null, (_, _) => _app.Quit());
+        // A WPF menu so it gets the Windows 11 Fluent look (rounded, acrylic-like, Segoe icons).
+        _menu = new ContextMenu { Placement = PlacementMode.MousePoint };
+        _menu.Items.Add(Item("Open", "\uE8A7", () => _app.Popup.ShowPopup(fromTray: true)));
+        _menu.Items.Add(new Separator());
+        _pauseItem = Item("Pause", "\uE769", () => _app.TogglePause());
+        _menu.Items.Add(_pauseItem);
+        _menu.Items.Add(Item("IgnoreNext", "\uE8D8", () => _app.IgnoreNextCopy()));
+        _stopStackItem = Item("StopPasteStack", "\uE71A", () => _app.PasteStack.Stop());
+        _stopStackItem.Visibility = Visibility.Collapsed;
+        _menu.Items.Add(_stopStackItem);
+        _menu.Items.Add(new Separator());
+        _menu.Items.Add(Item("Preferences", "\uE713", () => _app.ShowSettings()));
+        _menu.Items.Add(Item("CheckForUpdatesMenu", "\uE895", () => _app.CheckForUpdatesNow()));
+        _menu.Items.Add(Item("About", "\uE946", () => _app.ShowAbout()));
+        _menu.Items.Add(new Separator());
+        _menu.Items.Add(Item("Quit", "\uE7E8", () => _app.Quit()));
+        _menu.Opened += (_, _) =>
+        {
+            // Without foreground activation the menu would not close when clicking elsewhere.
+            if (PresentationSource.FromVisual(_menu) is HwndSource source) Native.SetForegroundWindow(source.Handle);
+        };
 
-        _icon = new Forms.NotifyIcon { ContextMenuStrip = menu };
+        _icon = new Forms.NotifyIcon();
         _icon.MouseUp += OnMouseUp;
         ApplySettings();
+    }
+
+    private static MenuItem Item(string key, string glyph, Action action)
+    {
+        var icon = new TextBlock { Text = glyph };
+        icon.SetResourceReference(FrameworkElement.StyleProperty, "Glyph");
+        var item = new MenuItem { Header = Loc.T(key), Icon = icon };
+        item.Click += (_, _) => action();
+        return item;
     }
 
     private static Icon LoadIcon(string name)
@@ -54,6 +74,11 @@ public sealed class TrayIcon : IDisposable
 
     private void OnMouseUp(object? sender, Forms.MouseEventArgs e)
     {
+        if (e.Button == Forms.MouseButtons.Right)
+        {
+            _menu.IsOpen = true;
+            return;
+        }
         if (e.Button != Forms.MouseButtons.Left) return;
         var mods = Forms.Control.ModifierKeys;
         if (mods.HasFlag(Forms.Keys.Alt) && mods.HasFlag(Forms.Keys.Shift))
@@ -69,9 +94,9 @@ public sealed class TrayIcon : IDisposable
         var s = AppSettings.Current;
         var paused = s.IgnoreEvents;
         _icon.Icon = paused ? _paused : _normal;
-        _pauseItem.Text = Loc.T(paused ? "Resume" : "Pause");
+        _pauseItem.Header = Loc.T(paused ? "Resume" : "Pause");
         _icon.Visible = s.ShowInTray;
-        _stopStackItem.Visible = _app.PasteStack?.IsActive == true;
+        _stopStackItem.Visibility = _app.PasteStack?.IsActive == true ? Visibility.Visible : Visibility.Collapsed;
         RefreshText();
     }
 
@@ -89,6 +114,14 @@ public sealed class TrayIcon : IDisposable
         if (AppSettings.Current.ShowRecentCopyInTray && _recent.Length > 0) text += "\n" + _recent;
         // NotifyIcon.Text is limited to 127 characters.
         _icon.Text = text.Length > 127 ? text[..126] + "…" : text;
+    }
+
+    public void OpenMenuForSnapshot()
+    {
+        _menu.Placement = PlacementMode.AbsolutePoint;
+        _menu.HorizontalOffset = 200;
+        _menu.VerticalOffset = 120;
+        _menu.IsOpen = true;
     }
 
     public void ShowNotification(string message)

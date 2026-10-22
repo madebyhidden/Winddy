@@ -15,6 +15,8 @@ public partial class App : Application
     private Mutex? _mutex;
     private EventWaitHandle? _showEvent;
     private TrayIcon? _tray;
+
+    public TrayIcon? Tray => _tray;
     private SettingsWindow? _settings;
     private AboutWindow? _about;
     private UpdateWindow? _update;
@@ -53,12 +55,12 @@ public partial class App : Application
 
         AppSettings.Load();
         Loc.Init(AppSettings.Current.Language);
-        Theme.Apply(Resources);
+        Theme.Apply();
         SystemEvents.UserPreferenceChanged += (_, args) =>
         {
             if (args.Category == UserPreferenceCategory.General) Dispatcher.Invoke(() =>
             {
-                Theme.Apply(Resources);
+                Theme.Apply();
                 Theme.RefreshFrame(Popup);
             });
         };
@@ -69,6 +71,8 @@ public partial class App : Application
         PasteStack = new PasteStack(Clipboard, Dispatcher);
         Hotkeys = new HotkeyManager();
         Popup = new PopupWindow(this);
+        // The popup draws its own acrylic; keep the theme manager from treating it as the main window.
+        MainWindow = null;
         _tray = new TrayIcon(this);
         Notifier.ShowNotification = message => _tray.ShowNotification(message);
         PasteStack.Changed += () => _tray.ApplySettings();
@@ -90,6 +94,13 @@ public partial class App : Application
             }
         }) { IsBackground = true };
         listener.Start();
+
+        var snapshot = Array.IndexOf(e.Args, "--ui-snapshot");
+        if (snapshot >= 0 && snapshot + 1 < e.Args.Length)
+        {
+            _ = UiSnapshot.RunAsync(this, e.Args[snapshot + 1]);
+            return;
+        }
 
         CommandServer.Start(this);
         Updater.StartAutomaticChecks(ShowUpdate);

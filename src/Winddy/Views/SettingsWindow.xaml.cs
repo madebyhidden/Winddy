@@ -10,6 +10,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using Microsoft.Win32;
+using Wpf.Ui.Appearance;
+using Wpf.Ui.Controls;
 using Winddy.Models;
 using Winddy.Services;
 
@@ -17,7 +19,7 @@ namespace Winddy.Views;
 
 public sealed record Choice(object Value, string Label);
 
-public partial class SettingsWindow : Window
+public partial class SettingsWindow : FluentWindow
 {
     private readonly App _app;
     private readonly ObservableCollection<PinRow> _pins = new();
@@ -28,8 +30,8 @@ public partial class SettingsWindow : Window
     {
         _app = app;
         InitializeComponent();
-        SourceInitialized += (_, _) => Theme.StyleWindow(this);
 
+        VersionText.Text = Loc.T("Version", Updater.CurrentVersion.ToString(3));
         SearchModeBox.ItemsSource = Choices<SearchMode>(("Exact", SearchMode.Exact), ("Fuzzy", SearchMode.Fuzzy), ("Regexp", SearchMode.Regexp), ("Mixed", SearchMode.Mixed));
         SortByBox.ItemsSource = Choices<SortBy>(("LastCopiedAt", SortBy.LastCopiedAt), ("FirstCopiedAt", SortBy.FirstCopiedAt), ("NumberOfCopies", SortBy.NumberOfCopies));
         PopupPositionBox.ItemsSource = Choices<PopupPosition>(("Cursor", PopupPosition.Cursor), ("TrayIcon", PopupPosition.TrayIcon),
@@ -44,11 +46,8 @@ public partial class SettingsWindow : Window
         DataContext = AppSettings.Current;
         LaunchAtLoginBox.IsChecked = LaunchAtLogin.IsEnabled;
 
-        AppsList.ItemsSource = AppSettings.Current.IgnoredApps.ToList();
-        FormatsList.ItemsSource = AppSettings.Current.IgnoredFormats.ToList();
-        RegexList.ItemsSource = AppSettings.Current.IgnoreRegexp.ToList();
-
-        PinsGrid.ItemsSource = _pins;
+        RefreshLists();
+        PinsList.ItemsSource = _pins;
         LoadPins();
         UpdateModifiersText();
         UpdateDiskSize();
@@ -64,16 +63,31 @@ public partial class SettingsWindow : Window
 
         _app.Store.Changed += OnStoreChanged;
         Closed += (_, _) => _app.Store.Changed -= OnStoreChanged;
-        Loaded += (_, _) => _loading = false;
+        Loaded += (_, _) =>
+        {
+            SystemThemeWatcher.Watch(this, WindowBackdropType.Mica, true);
+            NavList.SelectedIndex = 0;
+            _loading = false;
+        };
     }
 
     private static List<Choice> Choices<T>(params (string Key, T Value)[] items) where T : notnull =>
         items.Select(i => new Choice(i.Value, Loc.T(i.Key))).ToList();
 
+    private void NavList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        e.Handled = true;
+        if (NavList.SelectedItem is not ListBoxItem { Tag: string pageName } item) return;
+        foreach (var page in new FrameworkElement[] { GeneralPage, StoragePage, AppearancePage, PinsPage, IgnorePage, AdvancedPage })
+            page.Visibility = page.Name == pageName ? Visibility.Visible : Visibility.Collapsed;
+        PageTitle.Text = item.Content is StackPanel { Children.Count: > 1 } sp && sp.Children[1] is System.Windows.Controls.TextBlock tb ? tb.Text : "";
+        PageScroller.ScrollToTop();
+    }
+
     private void OnAnyChange(object sender, RoutedEventArgs e)
     {
         if (_loading || _savePending) return;
-        if (e.OriginalSource is DataGridCell or DataGrid || IsInside(e.OriginalSource as DependencyObject, PinsGrid)) return;
+        if (e.OriginalSource == NavList || IsInside(e.OriginalSource as DependencyObject, PinsList)) return;
         _savePending = true;
         Dispatcher.BeginInvoke(new Action(() =>
         {
@@ -112,11 +126,7 @@ public partial class SettingsWindow : Window
         {
             var dir = new DirectoryInfo(AppSettings.Directory);
             var bytes = dir.Exists ? dir.EnumerateFiles("*", SearchOption.AllDirectories).Sum(f => f.Length) : 0;
-            DiskSizeText.Text = bytes switch
-            {
-                < 1024 * 1024 => $"{bytes / 1024.0:0.#} KB",
-                _ => $"{bytes / 1024.0 / 1024.0:0.#} MB",
-            };
+            DiskSizeText.Text = bytes < 1024 * 1024 ? $"{bytes / 1024.0:0.#} KB" : $"{bytes / 1024.0 / 1024.0:0.#} MB";
         }
         catch
         {
@@ -143,7 +153,7 @@ public partial class SettingsWindow : Window
         if (_loading) return;
         var lang = LanguageBox.SelectedValue as string;
         AppSettings.Current.Language = string.IsNullOrEmpty(lang) ? null : lang;
-        RestartHint.Visibility = Visibility.Visible;
+        LanguageCard.Description = Loc.T("RestartNeeded");
     }
 
     private void ResetPosition_Click(object sender, RoutedEventArgs e) =>
@@ -153,7 +163,7 @@ public partial class SettingsWindow : Window
 
     private void OnStoreChanged()
     {
-        if (!PinsGrid.IsKeyboardFocusWithin) LoadPins();
+        if (!PinsList.IsKeyboardFocusWithin) LoadPins();
         UpdateDiskSize();
     }
 
@@ -162,11 +172,12 @@ public partial class SettingsWindow : Window
         _pins.Clear();
         foreach (var item in _app.Store.Sorted().Where(i => i.IsPinned))
             _pins.Add(new PinRow(item, _app.Store));
+        NoPinsText.Visibility = _pins.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
     }
 
-    private void MovePin(int delta)
+    private void MovePin(object sender, int delta)
     {
-        if (PinsGrid.SelectedItem is not PinRow row) return;
+        if (((FrameworkElement)sender).DataContext is not PinRow row) return;
         var order = AppSettings.Current.PinOrder;
         var idx = order.IndexOf(row.Item.Pin!);
         var target = idx + delta;
@@ -175,36 +186,49 @@ public partial class SettingsWindow : Window
         AppSettings.Save();
         _app.Store.NotifyChanged();
         LoadPins();
-        PinsGrid.SelectedItem = _pins.FirstOrDefault(p => p.Item == row.Item);
     }
 
-    private void PinUp_Click(object sender, RoutedEventArgs e) => MovePin(-1);
+    private void PinUp_Click(object sender, RoutedEventArgs e) => MovePin(sender, -1);
 
-    private void PinDown_Click(object sender, RoutedEventArgs e) => MovePin(+1);
+    private void PinDown_Click(object sender, RoutedEventArgs e) => MovePin(sender, +1);
+
+    private void Unpin_Click(object sender, RoutedEventArgs e)
+    {
+        if (((FrameworkElement)sender).DataContext is PinRow row) _app.Store.TogglePin(row.Item);
+        LoadPins();
+    }
 
     // ───────────── Ignore lists ─────────────
 
-    private static void AddTo(List<string> target, ListBox view, TextBox input)
+    private void RefreshLists()
+    {
+        AppsList.ItemsSource = AppSettings.Current.IgnoredApps.ToList();
+        FormatsList.ItemsSource = AppSettings.Current.IgnoredFormats.ToList();
+        RegexList.ItemsSource = AppSettings.Current.IgnoreRegexp.ToList();
+    }
+
+    private void AddTo(List<string> target, System.Windows.Controls.TextBox input)
     {
         var value = input.Text.Trim();
         if (value.Length == 0 || target.Contains(value, StringComparer.OrdinalIgnoreCase)) return;
         target.Add(value);
-        view.ItemsSource = target.ToList();
         input.Clear();
         AppSettings.Save();
+        RefreshLists();
     }
 
-    private static void RemoveFrom(List<string> target, ListBox view)
+    private void RemoveEntry_Click(object sender, RoutedEventArgs e)
     {
-        if (view.SelectedItem is not string value) return;
-        target.Remove(value);
-        view.ItemsSource = target.ToList();
+        if (((FrameworkElement)sender).DataContext is not string value) return;
+        var s = AppSettings.Current;
+        if (IsInside((DependencyObject)sender, AppsList)) s.IgnoredApps.Remove(value);
+        else if (IsInside((DependencyObject)sender, FormatsList)) s.IgnoredFormats.Remove(value);
+        else s.IgnoreRegexp.Remove(value);
         AppSettings.Save();
+        RefreshLists();
     }
 
-    private void AddApp_Click(object sender, RoutedEventArgs e) => AddTo(AppSettings.Current.IgnoredApps, AppsList, AppInput);
-
-    private void RemoveApp_Click(object sender, RoutedEventArgs e) => RemoveFrom(AppSettings.Current.IgnoredApps, AppsList);
+    private void AddApp_Click(object sender, RoutedEventArgs e) => AddTo(AppSettings.Current.IgnoredApps, AppInput);
 
     private void AppInput_KeyDown(object sender, KeyEventArgs e)
     {
@@ -219,9 +243,7 @@ public partial class SettingsWindow : Window
         AddApp_Click(sender, e);
     }
 
-    private void AddFormat_Click(object sender, RoutedEventArgs e) => AddTo(AppSettings.Current.IgnoredFormats, FormatsList, FormatInput);
-
-    private void RemoveFormat_Click(object sender, RoutedEventArgs e) => RemoveFrom(AppSettings.Current.IgnoredFormats, FormatsList);
+    private void AddFormat_Click(object sender, RoutedEventArgs e) => AddTo(AppSettings.Current.IgnoredFormats, FormatInput);
 
     private void FormatInput_KeyDown(object sender, KeyEventArgs e)
     {
@@ -231,8 +253,8 @@ public partial class SettingsWindow : Window
     private void ResetFormats_Click(object sender, RoutedEventArgs e)
     {
         AppSettings.Current.IgnoredFormats = new List<string>(AppSettings.DefaultIgnoredFormats);
-        FormatsList.ItemsSource = AppSettings.Current.IgnoredFormats.ToList();
         AppSettings.Save();
+        RefreshLists();
     }
 
     private void AddRegex_Click(object sender, RoutedEventArgs e)
@@ -247,10 +269,8 @@ public partial class SettingsWindow : Window
             return;
         }
         RegexInput.ToolTip = null;
-        AddTo(AppSettings.Current.IgnoreRegexp, RegexList, RegexInput);
+        AddTo(AppSettings.Current.IgnoreRegexp, RegexInput);
     }
-
-    private void RemoveRegex_Click(object sender, RoutedEventArgs e) => RemoveFrom(AppSettings.Current.IgnoreRegexp, RegexList);
 
     private void RegexInput_KeyDown(object sender, KeyEventArgs e)
     {
@@ -258,7 +278,7 @@ public partial class SettingsWindow : Window
     }
 }
 
-/// <summary>Editable row of the Pins table.</summary>
+/// <summary>Editable row of the Pins page.</summary>
 public sealed class PinRow : INotifyPropertyChanged
 {
     private readonly HistoryStore _store;

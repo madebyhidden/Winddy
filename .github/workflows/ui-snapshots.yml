@@ -1,0 +1,45 @@
+name: UI snapshots
+
+# Runs Winddy on a real Windows desktop and captures every window in light and dark theme.
+on:
+  workflow_dispatch:
+  push:
+    branches-ignore: [main]
+    paths: ['src/**', '.github/workflows/ui-snapshots.yml']
+
+jobs:
+  snapshots:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        theme: [light, dark]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - name: Build
+        run: dotnet build src/Winddy/Winddy.csproj -c Release -o build
+      - name: Set Windows theme
+        shell: pwsh
+        run: |
+          $value = if ('${{ matrix.theme }}' -eq 'dark') { 0 } else { 1 }
+          $key = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Themes\Personalize'
+          New-Item -Path $key -Force | Out-Null
+          Set-ItemProperty -Path $key -Name AppsUseLightTheme -Value $value -Type DWord
+          Set-ItemProperty -Path $key -Name SystemUsesLightTheme -Value $value -Type DWord
+          Set-ItemProperty -Path $key -Name EnableTransparency -Value 1 -Type DWord
+      - name: Capture
+        shell: pwsh
+        run: |
+          $env:WINDDY_DATA_DIR = "$env:RUNNER_TEMP\winddy-data"
+          $out = "$env:GITHUB_WORKSPACE\snapshots\${{ matrix.theme }}"
+          $p = Start-Process -FilePath build\Winddy.exe -ArgumentList '--ui-snapshot', $out -PassThru
+          if (-not $p.WaitForExit(120000)) { $p.Kill(); throw 'Winddy did not finish' }
+          Get-ChildItem $out
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: snapshots-${{ matrix.theme }}
+          path: snapshots/${{ matrix.theme }}

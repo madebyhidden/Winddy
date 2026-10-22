@@ -62,7 +62,7 @@ public sealed class HighlightTextBlock : TextBlock
                 run.TextDecorations = System.Windows.TextDecorations.Underline;
                 break;
             case HighlightMatch.Color:
-                run.SetResourceReference(TextElement.ForegroundProperty, "HighlightColor");
+                run.SetResourceReference(TextElement.ForegroundProperty, "AccentTextFillColorPrimaryBrush");
                 break;
             default:
                 run.FontWeight = FontWeights.Bold;
