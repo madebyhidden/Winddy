@@ -1,0 +1,299 @@
+<Window x:Class="Winddy.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:Winddy.Services"
+        xmlns:c="clr-namespace:Winddy.Controls"
+        Title="{l:Tr SettingsTitle}" Width="620" Height="600" MinWidth="560" MinHeight="460"
+        WindowStartupLocation="CenterScreen" Icon="/Assets/Winddy.ico"
+        Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource Foreground}"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13">
+    <Window.Resources>
+        <Style x:Key="Label" TargetType="TextBlock">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+            <Setter Property="Margin" Value="0,0,12,0" />
+        </Style>
+        <Style x:Key="Hint" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{DynamicResource SecondaryForeground}" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,4,0,0" />
+        </Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Margin" Value="0,4" />
+            <Setter Property="Foreground" Value="{DynamicResource Foreground}" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+        <Style TargetType="RadioButton">
+            <Setter Property="Margin" Value="0,0,14,0" />
+            <Setter Property="Foreground" Value="{DynamicResource Foreground}" />
+        </Style>
+        <Style TargetType="ComboBox">
+            <Setter Property="MinWidth" Value="200" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Padding" Value="6,3" />
+        </Style>
+        <Style x:Key="Number" TargetType="TextBox">
+            <Setter Property="Width" Value="80" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+            <Setter Property="Padding" Value="4,3" />
+        </Style>
+        <Style x:Key="Row" TargetType="Grid">
+            <Setter Property="Margin" Value="0,6" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="10,3" />
+            <Setter Property="MinWidth" Value="80" />
+        </Style>
+    </Window.Resources>
+
+    <TabControl x:Name="Tabs" Margin="10" Background="Transparent" BorderBrush="{DynamicResource WindowBorder}">
+        <!-- General -->
+        <TabItem Header="{l:Tr General}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <Grid Margin="16" Grid.IsSharedSizeScope="True">
+                    <StackPanel>
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <CheckBox x:Name="LaunchAtLoginBox" Grid.Column="1" Content="{l:Tr LaunchAtLogin}" Click="LaunchAtLogin_Click" />
+                        </Grid>
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <CheckBox Content="{l:Tr CheckForUpdates}" IsChecked="{Binding CheckForUpdates}" />
+                                <Button Content="{l:Tr CheckNow}" Margin="12,0,0,0" Click="CheckNow_Click" />
+                            </StackPanel>
+                        </Grid>
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{l:Tr OpenHotkey}" Style="{StaticResource Label}" />
+                            <c:HotkeyBox x:Name="OpenHotkeyBox" Grid.Column="1" HorizontalAlignment="Left" RequireModifier="True"
+                                         Hotkey="{Binding OpenHotkey, UpdateSourceTrigger=PropertyChanged}" ToolTip="{l:Tr OpenHotkeyTooltip}" />
+                        </Grid>
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{l:Tr PinHotkey}" Style="{StaticResource Label}" />
+                            <c:HotkeyBox Grid.Column="1" HorizontalAlignment="Left" Hotkey="{Binding PinHotkey, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{l:Tr DeleteHotkey}" Style="{StaticResource Label}" />
+                            <c:HotkeyBox Grid.Column="1" HorizontalAlignment="Left" Hotkey="{Binding DeleteHotkey, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                        <Grid Style="{StaticResource Row}">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{l:Tr PreviewHotkey}" Style="{StaticResource Label}" />
+                            <c:HotkeyBox Grid.Column="1" HorizontalAlignment="Left" Hotkey="{Binding PreviewHotkey, UpdateSourceTrigger=PropertyChanged}" />
+                        </Grid>
+                        <Grid Style="{StaticResource Row}" Margin="0,14,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{l:Tr Search}" Style="{StaticResource Label}" />
+                            <ComboBox x:Name="SearchModeBox" Grid.Column="1" SelectedValuePath="Value" DisplayMemberPath="Label" SelectedValue="{Binding SearchMode}" />
+                        </Grid>
+                        <Grid Style="{StaticResource Row}" Margin="0,14,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{l:Tr Behavior}" Style="{StaticResource Label}" VerticalAlignment="Top" Margin="0,4,12,0" />
+                            <StackPanel Grid.Column="1">
+                                <CheckBox Content="{l:Tr PasteAutomatically}" IsChecked="{Binding PasteByDefault}" />
+                                <CheckBox Content="{l:Tr PasteWithoutFormatting}" IsChecked="{Binding RemoveFormattingByDefault}" />
+                                <TextBlock x:Name="ModifiersText" Style="{StaticResource Hint}" />
+                            </StackPanel>
+                        </Grid>
+                        <Grid Style="{StaticResource Row}" Margin="0,14,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{l:Tr NotificationsAndSounds}" Style="{StaticResource Label}" VerticalAlignment="Top" Margin="0,4,12,0" />
+                            <StackPanel Grid.Column="1">
+                                <CheckBox Content="{l:Tr ShowNotifications}" IsChecked="{Binding ShowNotifications}" />
+                                <CheckBox Content="{l:Tr PlaySounds}" IsChecked="{Binding PlaySounds}" />
+                            </StackPanel>
+                        </Grid>
+                        <Grid Style="{StaticResource Row}" Margin="0,14,0,6">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                            <TextBlock Text="{l:Tr Language}" Style="{StaticResource Label}" />
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <ComboBox x:Name="LanguageBox" SelectedValuePath="Value" DisplayMemberPath="Label" SelectionChanged="LanguageBox_SelectionChanged" />
+                                <TextBlock x:Name="RestartHint" Text="{l:Tr RestartNeeded}" Style="{StaticResource Hint}" Margin="10,0,0,0" VerticalAlignment="Center" Visibility="Collapsed" />
+                            </StackPanel>
+                        </Grid>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </TabItem>
+
+        <!-- Storage -->
+        <TabItem Header="{l:Tr Storage}">
+            <StackPanel Margin="16">
+                <Grid Style="{StaticResource Row}">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                    <TextBlock Text="{l:Tr Save}" Style="{StaticResource Label}" VerticalAlignment="Top" Margin="0,4,12,0" />
+                    <StackPanel Grid.Column="1">
+                        <CheckBox Content="{l:Tr Files}" IsChecked="{Binding SaveFiles}" />
+                        <CheckBox Content="{l:Tr Images}" IsChecked="{Binding SaveImages}" />
+                        <CheckBox Content="{l:Tr Text}" IsChecked="{Binding SaveText}" />
+                        <TextBlock Text="{l:Tr SaveDescription}" Style="{StaticResource Hint}" />
+                    </StackPanel>
+                </Grid>
+                <Grid Style="{StaticResource Row}" Margin="0,14,0,6">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                    <TextBlock Text="{l:Tr Size}" Style="{StaticResource Label}" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal">
+                        <TextBox Style="{StaticResource Number}" Text="{Binding HistorySize, UpdateSourceTrigger=PropertyChanged}" ToolTip="{l:Tr SizeTooltip}" />
+                        <TextBlock x:Name="DiskSizeText" Style="{StaticResource Hint}" Margin="10,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+                </Grid>
+                <Grid Style="{StaticResource Row}">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                    <TextBlock Text="{l:Tr SortBy}" Style="{StaticResource Label}" />
+                    <ComboBox x:Name="SortByBox" Grid.Column="1" SelectedValuePath="Value" DisplayMemberPath="Label" SelectedValue="{Binding SortBy}" />
+                </Grid>
+            </StackPanel>
+        </TabItem>
+
+        <!-- Appearance -->
+        <TabItem Header="{l:Tr Appearance}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="16">
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr PopupAt}" Style="{StaticResource Label}" />
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <ComboBox x:Name="PopupPositionBox" SelectedValuePath="Value" DisplayMemberPath="Label" SelectedValue="{Binding PopupPosition}" />
+                            <Button Content="{l:Tr ResetPosition}" Margin="8,0,0,0" Click="ResetPosition_Click" />
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr PinTo}" Style="{StaticResource Label}" />
+                        <ComboBox x:Name="PinToBox" Grid.Column="1" SelectedValuePath="Value" DisplayMemberPath="Label" SelectedValue="{Binding PinTo}" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr ImageHeight}" Style="{StaticResource Label}" />
+                        <TextBox Grid.Column="1" Style="{StaticResource Number}" Text="{Binding ImageMaxHeight, UpdateSourceTrigger=PropertyChanged}" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr PreviewDelay}" Style="{StaticResource Label}" />
+                        <StackPanel Grid.Column="1">
+                            <TextBox Style="{StaticResource Number}" Text="{Binding PreviewDelay, UpdateSourceTrigger=PropertyChanged}" />
+                            <CheckBox Content="{l:Tr OpenPreviewAutomatically}" IsChecked="{Binding OpenPreviewAutomatically}" />
+                        </StackPanel>
+                    </Grid>
+                    <Grid Style="{StaticResource Row}">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                        <TextBlock Text="{l:Tr HighlightMatches}" Style="{StaticResource Label}" />
+                        <ComboBox x:Name="HighlightBox" Grid.Column="1" SelectedValuePath="Value" DisplayMemberPath="Label" SelectedValue="{Binding HighlightMatch}" />
+                    </Grid>
+                    <Grid Style="{StaticResource Row}" Margin="0,12,0,6">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="160" /><ColumnDefinition /></Grid.ColumnDefinitions>
+                        <StackPanel Grid.Column="1">
+                            <CheckBox Content="{l:Tr ShowSpecialSymbols}" IsChecked="{Binding ShowSpecialSymbols}" />
+                            <CheckBox Content="{l:Tr ShowInTray}" IsChecked="{Binding ShowInTray}" />
+                            <CheckBox Content="{l:Tr ShowRecentCopyInTray}" IsChecked="{Binding ShowRecentCopyInTray}" Margin="20,4,0,4" />
+                            <StackPanel Orientation="Horizontal">
+                                <CheckBox Content="{l:Tr ShowSearch}" IsChecked="{Binding ShowSearch}" />
+                                <ComboBox x:Name="SearchVisibilityBox" MinWidth="140" Margin="10,0,0,0" SelectedValuePath="Value" DisplayMemberPath="Label"
+                                          SelectedValue="{Binding SearchVisibility}" IsEnabled="{Binding ShowSearch}" />
+                            </StackPanel>
+                            <CheckBox Content="{l:Tr ShowTitle}" IsChecked="{Binding ShowTitle}" />
+                            <CheckBox Content="{l:Tr ShowApplicationIcons}" IsChecked="{Binding ShowApplicationIcons}" />
+                            <CheckBox Content="{l:Tr ShowHexColorSwatch}" IsChecked="{Binding ShowHexColorSwatch}" />
+                            <CheckBox Content="{l:Tr ShowFooter}" IsChecked="{Binding ShowFooter}" />
+                            <TextBlock Text="{l:Tr FooterWarning}" Style="{StaticResource Hint}" />
+                        </StackPanel>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+        </TabItem>
+
+        <!-- Pins -->
+        <TabItem Header="{l:Tr Pins}">
+            <DockPanel Margin="16">
+                <TextBlock DockPanel.Dock="Bottom" Text="{l:Tr PinDescription}" Style="{StaticResource Hint}" Margin="0,10,0,0" />
+                <StackPanel DockPanel.Dock="Right" Margin="8,0,0,0">
+                    <Button Content="▲" MinWidth="36" Click="PinUp_Click" />
+                    <Button Content="▼" MinWidth="36" Margin="0,4,0,0" Click="PinDown_Click" />
+                </StackPanel>
+                <DataGrid x:Name="PinsGrid" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False"
+                          HeadersVisibility="Column" SelectionMode="Single" GridLinesVisibility="Horizontal" RowHeaderWidth="0">
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn Header="{l:Tr Key}" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <ComboBox ItemsSource="{Binding AvailablePins}" SelectedItem="{Binding Key, UpdateSourceTrigger=PropertyChanged}" MinWidth="60" BorderThickness="0" />
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Header="{l:Tr Alias}" Width="150" Binding="{Binding Title, UpdateSourceTrigger=LostFocus}" />
+                        <DataGridTextColumn Header="{l:Tr Content}" Width="*" Binding="{Binding Content, UpdateSourceTrigger=LostFocus}">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding IsEditable}" Value="False">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                            <Setter Property="FontStyle" Value="Italic" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </DockPanel>
+        </TabItem>
+
+        <!-- Ignore -->
+        <TabItem Header="{l:Tr Ignore}">
+            <TabControl Margin="12" Background="Transparent">
+                <TabItem Header="{l:Tr ApplicationsTab}">
+                    <DockPanel Margin="10">
+                        <TextBlock DockPanel.Dock="Top" Text="{l:Tr IgnoredAppsDescription}" Style="{StaticResource Hint}" Margin="0,0,0,8" />
+                        <CheckBox DockPanel.Dock="Bottom" Content="{l:Tr IgnoreAllExceptListed}" IsChecked="{Binding IgnoreAllAppsExceptListed}" Margin="0,8,0,0" />
+                        <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                            <Button DockPanel.Dock="Right" Content="{l:Tr Remove}" Margin="6,0,0,0" Click="RemoveApp_Click" />
+                            <Button DockPanel.Dock="Right" Content="{l:Tr Browse}" Margin="6,0,0,0" Click="BrowseApp_Click" />
+                            <Button DockPanel.Dock="Right" Content="{l:Tr Add}" Margin="6,0,0,0" Click="AddApp_Click" />
+                            <TextBox x:Name="AppInput" Padding="4,3" KeyDown="AppInput_KeyDown" />
+                        </DockPanel>
+                        <ListBox x:Name="AppsList" />
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="{l:Tr FormatsTab}">
+                    <DockPanel Margin="10">
+                        <TextBlock DockPanel.Dock="Top" Text="{l:Tr IgnoredFormatsDescription}" Style="{StaticResource Hint}" Margin="0,0,0,8" />
+                        <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                            <Button DockPanel.Dock="Right" Content="{l:Tr Reset}" Margin="6,0,0,0" Click="ResetFormats_Click" />
+                            <Button DockPanel.Dock="Right" Content="{l:Tr Remove}" Margin="6,0,0,0" Click="RemoveFormat_Click" />
+                            <Button DockPanel.Dock="Right" Content="{l:Tr Add}" Margin="6,0,0,0" Click="AddFormat_Click" />
+                            <TextBox x:Name="FormatInput" Padding="4,3" KeyDown="FormatInput_KeyDown" />
+                        </DockPanel>
+                        <ListBox x:Name="FormatsList" />
+                    </DockPanel>
+                </TabItem>
+                <TabItem Header="{l:Tr RegexpTab}">
+                    <DockPanel Margin="10">
+                        <TextBlock DockPanel.Dock="Top" Text="{l:Tr IgnoredRegexpDescription}" Style="{StaticResource Hint}" Margin="0,0,0,8" />
+                        <DockPanel DockPanel.Dock="Bottom" Margin="0,8,0,0">
+                            <Button DockPanel.Dock="Right" Content="{l:Tr Remove}" Margin="6,0,0,0" Click="RemoveRegex_Click" />
+                            <Button DockPanel.Dock="Right" Content="{l:Tr Add}" Margin="6,0,0,0" Click="AddRegex_Click" />
+                            <TextBox x:Name="RegexInput" Padding="4,3" FontFamily="Cascadia Mono, Consolas" KeyDown="RegexInput_KeyDown" />
+                        </DockPanel>
+                        <ListBox x:Name="RegexList" FontFamily="Cascadia Mono, Consolas" />
+                    </DockPanel>
+                </TabItem>
+            </TabControl>
+        </TabItem>
+
+        <!-- Advanced -->
+        <TabItem Header="{l:Tr Advanced}">
+            <StackPanel Margin="16">
+                <CheckBox Content="{l:Tr TurnOff}" IsChecked="{Binding IgnoreEvents}" />
+                <TextBlock Text="{l:Tr TurnOffDescription}" Style="{StaticResource Hint}" Margin="22,2,0,10" />
+                <CheckBox Content="{l:Tr ClearOnQuit}" IsChecked="{Binding ClearOnQuit}" ToolTip="{l:Tr ClearOnQuitTooltip}" />
+                <TextBlock Text="{l:Tr ClearOnQuitTooltip}" Style="{StaticResource Hint}" Margin="22,2,0,10" />
+                <CheckBox Content="{l:Tr ClearSystemClipboard}" IsChecked="{Binding ClearSystemClipboard}" />
+                <TextBlock Text="{l:Tr ClearSystemClipboardTooltip}" Style="{StaticResource Hint}" Margin="22,2,0,10" />
+            </StackPanel>
+        </TabItem>
+    </TabControl>
+</Window>

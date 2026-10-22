@@ -1,0 +1,33 @@
+<Window x:Class="Winddy.Views.UpdateWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:l="clr-namespace:Winddy.Services"
+        Title="{l:Tr UpdateTitle}" Width="540" Height="420" MinWidth="440" MinHeight="320"
+        WindowStartupLocation="CenterScreen" Icon="/Assets/Winddy.ico" Topmost="True"
+        Background="{DynamicResource WindowBackground}" Foreground="{DynamicResource Foreground}"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13">
+    <DockPanel Margin="20">
+        <Image DockPanel.Dock="Left" Source="/Assets/Winddy.ico" Width="56" Height="56" VerticalAlignment="Top" Margin="0,0,16,0" />
+        <StackPanel DockPanel.Dock="Top">
+            <TextBlock Text="{l:Tr UpdateHeadline}" FontWeight="SemiBold" FontSize="15" />
+            <TextBlock x:Name="VersionsText" Margin="0,4,0,0" TextWrapping="Wrap" />
+            <TextBlock Text="{l:Tr ReleaseNotes}" FontWeight="SemiBold" Margin="0,14,0,4" />
+        </StackPanel>
+        <StackPanel DockPanel.Dock="Bottom" Margin="0,14,0,0">
+            <ProgressBar x:Name="Progress" Height="6" Visibility="Collapsed" Margin="0,0,0,10" Maximum="1" />
+            <TextBlock x:Name="ErrorText" Foreground="#D93025" TextWrapping="Wrap" Visibility="Collapsed" Margin="0,0,0,8" />
+            <DockPanel>
+                <Button x:Name="SkipButton" Content="{l:Tr SkipVersion}" Padding="10,4" Click="Skip_Click" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button x:Name="LaterButton" Content="{l:Tr RemindLater}" Padding="10,4" IsCancel="True" Click="Later_Click" />
+                    <Button x:Name="InstallButton" Content="{l:Tr InstallUpdate}" Padding="10,4" Margin="8,0,0,0" IsDefault="True" Click="Install_Click" />
+                </StackPanel>
+            </DockPanel>
+        </StackPanel>
+        <Border BorderBrush="{DynamicResource WindowBorder}" BorderThickness="1" CornerRadius="4" Background="{DynamicResource SearchBackground}">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="10,8">
+                <TextBlock x:Name="NotesText" TextWrapping="Wrap" />
+            </ScrollViewer>
+        </Border>
+    </DockPanel>
+</Window>
