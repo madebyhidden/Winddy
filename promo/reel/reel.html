@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Winddy reel</title>
+<style>
+  :root {
+    --bg: #070A1A;
+    --ink: #F5F7FF;
+    --muted: #A9B3D6;
+    --blue: #3B8BFF;
+    --cyan: #22C4F5;
+    --indigo: #4F46E5;
+  }
+  * { box-sizing: border-box; margin: 0; }
+  html, body { width: 1080px; height: 1920px; overflow: hidden; background: var(--bg); }
+  body {
+    font-family: -apple-system, "SF Pro Display", "Helvetica Neue", system-ui, sans-serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  .layer { position: absolute; inset: 0; }
+  .center { position: absolute; left: 0; right: 0; text-align: center; }
+
+  /* ambient background */
+  .blob { position: absolute; border-radius: 50%; filter: blur(140px); opacity: .55; }
+  #b1 { width: 900px; height: 900px; background: #2B5BFF; }
+  #b2 { width: 760px; height: 760px; background: #22C4F5; opacity: .35; }
+  #b3 { width: 820px; height: 820px; background: #5B3FE6; }
+  #grain { background-image: radial-gradient(rgba(255,255,255,.035) 1px, transparent 1px); background-size: 4px 4px; }
+
+  .title { font-size: 150px; font-weight: 800; letter-spacing: -5px; line-height: 1; }
+  .grad { background: linear-gradient(100deg, #FFFFFF 10%, #9CD8FF 55%, #8C84FF 95%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .h2 { font-size: 78px; font-weight: 750; letter-spacing: -2.5px; line-height: 1.05; }
+  .lead { font-size: 44px; font-weight: 500; color: var(--muted); letter-spacing: -.5px; line-height: 1.3; }
+  .kicker { font-size: 30px; font-weight: 650; letter-spacing: 6px; text-transform: uppercase; color: #8EC9FF; }
+
+  .card {
+    position: absolute; border-radius: 44px; padding: 40px 44px;
+    background: linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.04));
+    border: 1px solid rgba(255,255,255,.14);
+    box-shadow: 0 40px 120px rgba(0,0,0,.45);
+    backdrop-filter: blur(20px);
+  }
+  .pill {
+    display: inline-flex; align-items: center; gap: 18px; padding: 22px 40px; border-radius: 999px;
+    background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.16);
+    font-size: 42px; font-weight: 650; letter-spacing: -.5px; white-space: nowrap;
+  }
+  .key {
+    display: inline-block; padding: 10px 22px; margin: 0 4px; border-radius: 16px; font-weight: 700; font-size: 40px;
+    background: linear-gradient(180deg, #4C97FF, #2F6BEA); box-shadow: 0 6px 0 #1C46B0, 0 14px 30px rgba(47,107,234,.45);
+  }
+  .shot { position: absolute; border-radius: 26px; box-shadow: 0 50px 140px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.08); overflow: hidden; }
+  .shot img { display: block; width: 100%; height: 100%; }
+  .chip {
+    position: absolute; padding: 20px 34px; border-radius: 26px; font-size: 38px; font-weight: 650; white-space: nowrap;
+    background: rgba(14,18,40,.82); border: 1px solid rgba(255,255,255,.14); box-shadow: 0 20px 60px rgba(0,0,0,.45);
+  }
+  .chip b { color: #8EC9FF; font-weight: 750; }
+  .feature-caption { position: absolute; left: 70px; right: 70px; text-align: center; }
+  .dot { display: inline-block; width: 14px; height: 14px; border-radius: 50%; background: rgba(255,255,255,.25); margin: 0 8px; }
+  .dot.on { background: #8EC9FF; width: 44px; border-radius: 8px; }
+</style>
+</head>
+<body>
+  <!-- background -->
+  <div class="layer" id="bg">
+    <div class="blob" id="b1"></div>
+    <div class="blob" id="b2"></div>
+    <div class="blob" id="b3"></div>
+    <div class="layer" id="grain"></div>
+  </div>
+
+  <!-- 1 · hook -->
+  <div class="layer" id="s1">
+    <img id="s1icon" src="assets/icon.png" style="position:absolute; width:560px; height:560px; left:260px; top:430px;">
+    <div class="center title grad" id="s1title" style="top:1040px;">Winddy</div>
+    <div class="center lead" id="s1sub" style="top:1220px;">Менеджер буфера обмена<br>для Windows</div>
+  </div>
+
+  <!-- 2 · origin story -->
+  <div class="layer" id="s2">
+    <div class="center kicker" id="s2kicker" style="top:330px;">Как он появился</div>
+    <div class="center h2" id="s2h" style="top:400px;">Всё началось<br>с Maccy</div>
+    <div class="card" id="s2mac" style="left:90px; width:900px; top:700px;">
+      <div style="font-size:34px; color:var(--muted); font-weight:600;">macOS</div>
+      <div style="font-size:64px; font-weight:780; letter-spacing:-2px; margin-top:6px;">Maccy</div>
+      <div class="lead" style="font-size:38px; margin-top:14px;">Любимый open-source менеджер буфера обмена на Mac: быстрый, тихий, весь на клавиатуре.</div>
+    </div>
+    <div class="center lead" id="s2gap" style="top:1110px; color:#FFD27A; font-weight:650;">А на Windows такого не было</div>
+    <div class="card" id="s2win" style="left:90px; width:900px; top:1220px; display:flex; gap:36px; align-items:center;">
+      <img src="assets/icon.png" style="width:190px; height:190px; margin:-20px -10px -20px -24px;">
+      <div>
+        <div style="font-size:34px; color:#8EC9FF; font-weight:650;">Windows 10 · 11</div>
+        <div style="font-size:64px; font-weight:780; letter-spacing:-2px; margin-top:4px;">Winddy</div>
+        <div class="lead" style="font-size:36px; margin-top:8px;">Порт 1 в 1: те же клавиши, тот же поиск, та же скорость</div>
+      </div>
+    </div>
+    <div class="center lead" id="s2claude" style="top:1600px; font-size:34px;">собран за вечер вместе с Claude Code</div>
+  </div>
+
+  <!-- 3 · features -->
+  <div class="layer" id="s3">
+    <div class="center kicker" id="s3kicker" style="top:250px;">Что умеет</div>
+    <div class="shot" id="s3popup" style="width:820px; height:846px; left:130px; top:330px;"><img src="assets/popup-dark.png"></div>
+    <div class="shot" id="s3settings" style="width:960px; height:691px; left:60px; top:420px;"><img src="assets/settings-dark.png"></div>
+    <div id="captions"></div>
+    <div class="center" id="s3dots" style="top:1560px;"></div>
+  </div>
+
+  <!-- 4 · call to action -->
+  <div class="layer" id="s4">
+    <img id="s4icon" src="assets/icon.png" style="position:absolute; width:400px; height:400px; left:340px; top:300px;">
+    <div class="center title grad" id="s4title" style="top:720px; font-size:130px;">Winddy</div>
+    <div class="center lead" id="s4free" style="top:890px; color:var(--ink); font-weight:650;">Бесплатно · Open source · MIT</div>
+    <div class="center" id="s4link" style="top:1030px;">
+      <span class="pill">
+        <svg width="46" height="46" viewBox="0 0 16 16" fill="#fff"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+        github.com/madebyhidden/Winddy
+      </span>
+    </div>
+    <div class="center lead" id="s4dl" style="top:1190px;">Скачать: раздел <b style="color:#fff">Releases</b><br><span style="font-size:36px">Winddy-x64.exe · Winddy-arm64.exe</span></div>
+    <div class="center" id="s4keys" style="top:1440px; font-size:40px; font-weight:650; color:var(--muted);">
+      Открыть: <span class="key">Ctrl</span><span class="key">Shift</span><span class="key">C</span>
+    </div>
+  </div>
+
+<script>
+  const BAR = 60 / 112 * 4; // music bar length (s)
+  const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const easeOut = (x) => 1 - Math.pow(1 - x, 3);
+  const easeInOut = (x) => x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+  // damped spring overshoot 0→1
+  const spring = (x) => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.exp(-6 * x) * Math.cos(10 * x);
+  const $ = (id) => document.getElementById(id);
+  const show = (el, o, dy = 0, s = 1, dx = 0) => {
+    el.style.opacity = o;
+    el.style.transform = `translate(${dx}px, ${dy}px) scale(${s})`;
+  };
+  // fade in over [a, a+d], out over [b-d, b]
+  const window_ = (t, a, b, d = .45) => Math.min(easeOut(seg(t, a, a + d)), 1 - easeInOut(seg(t, b - d, b)));
+
+  // scene boundaries, aligned to the music
+  const S1 = [0, 2 * BAR], S2 = [2 * BAR, 5 * BAR], S3 = [5 * BAR, 11 * BAR], S4 = [11 * BAR, 30];
+
+  const features = [
+    { html: '<span class="key">Ctrl</span><span class="key">Shift</span><span class="key">C</span>', title: "Вся история — одним сочетанием", sub: "Окно появляется прямо у курсора", shot: "popup" },
+    { html: "", title: "Мгновенный поиск", sub: "Точный, нечёткий и регулярные выражения", shot: "popup", chip: "<b>Ctrl+1…9</b> — вставить нужное" },
+    { html: "", title: "Закрепляйте важное", sub: "Alt+P — элемент всегда наверху со своей клавишей", shot: "popup", chip: "<b>Alt+Enter</b> — сразу вставить" },
+    { html: "", title: "Стек вставки и OCR", sub: "Несколько элементов подряд по Ctrl+V · текст прямо с картинок", shot: "popup", chip: "<b>Shift+↓</b> — выбрать несколько" },
+    { html: "", title: "Настройки как в Windows 11", sub: "Mica, тёмная тема, свои сочетания клавиш", shot: "settings" },
+    { html: "", title: "Приватно и легко", sub: "Пароли из менеджеров не сохраняются · всё хранится локально", shot: "settings2" },
+  ];
+  const capEls = features.map((f, i) => {
+    const el = document.createElement("div");
+    el.className = "feature-caption";
+    el.style.top = "1230px";
+    el.innerHTML = (f.html ? `<div style="margin-bottom:26px">${f.html}</div>` : "") +
+      `<div class="h2" style="font-size:66px">${f.title}</div><div class="lead" style="font-size:38px; margin-top:14px">${f.sub}</div>`;
+    $("captions").appendChild(el);
+    if (f.chip) {
+      const chip = document.createElement("div");
+      chip.className = "chip";
+      chip.innerHTML = f.chip;
+      chip.style.left = "120px";
+      chip.style.top = "300px";
+      $("captions").appendChild(chip);
+      el.chip = chip;
+    }
+    return el;
+  });
+  $("s3dots").innerHTML = features.map(() => '<span class="dot"></span>').join("");
+  const dots = [...$("s3dots").children];
+
+  window.renderFrame = (t) => {
+    // background drift
+    $("b1").style.transform = `translate(${-180 + 120 * Math.sin(t * .35)}px, ${-120 + 90 * Math.cos(t * .27)}px)`;
+    $("b2").style.transform = `translate(${520 + 140 * Math.cos(t * .3)}px, ${760 + 120 * Math.sin(t * .22)}px)`;
+    $("b3").style.transform = `translate(${80 + 160 * Math.sin(t * .2 + 1)}px, ${1240 + 110 * Math.cos(t * .31)}px)`;
+
+    // 1 · hook
+    const s1 = window_(t, S1[0], S1[1], .4);
+    $("s1").style.opacity = s1 > 0 ? 1 : 0;
+    const pop = spring(seg(t, .1, 1.4));
+    show($("s1icon"), Math.min(1, seg(t, .1, .5)) * (1 - easeInOut(seg(t, S1[1] - .45, S1[1]))), (1 - pop) * 120 - 30 * seg(t, 2, S1[1]), .55 + .45 * pop);
+    show($("s1title"), window_(t, .7, S1[1]), 50 * (1 - easeOut(seg(t, .7, 1.3))));
+    show($("s1sub"), window_(t, 1.1, S1[1]), 40 * (1 - easeOut(seg(t, 1.1, 1.7))));
+
+    // 2 · origin
+    const a = S2[0];
+    $("s2").style.opacity = t >= a - .1 && t < S2[1] + .1 ? 1 : 0;
+    show($("s2kicker"), window_(t, a, S2[1]), 30 * (1 - easeOut(seg(t, a, a + .5))));
+    show($("s2h"), window_(t, a + .1, S2[1]), 40 * (1 - easeOut(seg(t, a + .1, a + .7))));
+    show($("s2mac"), window_(t, a + .5, S2[1]), 80 * (1 - easeOut(seg(t, a + .5, a + 1.1))), .96 + .04 * easeOut(seg(t, a + .5, a + 1.1)));
+    show($("s2gap"), window_(t, a + 1.9, S2[1]), 30 * (1 - easeOut(seg(t, a + 1.9, a + 2.4))));
+    const w = spring(seg(t, a + 2.9, a + 4.0));
+    show($("s2win"), Math.min(1, seg(t, a + 2.9, a + 3.3)) * (1 - easeInOut(seg(t, S2[1] - .45, S2[1]))), 120 * (1 - w), .9 + .1 * w);
+    show($("s2claude"), window_(t, a + 4.0, S2[1]) * .9, 20 * (1 - easeOut(seg(t, a + 4, a + 4.5))));
+
+    // 3 · features (one music bar per feature)
+    const f0 = S3[0], per = (S3[1] - S3[0]) / features.length;
+    $("s3").style.opacity = t >= f0 - .1 && t < S3[1] + .1 ? 1 : 0;
+    show($("s3kicker"), window_(t, f0, S3[1]));
+    const idx = clamp(Math.floor((t - f0) / per), 0, features.length - 1);
+    const popupOn = window_(t, f0, f0 + per * 4 + .25, .45);
+    const pz = easeOut(seg(t, f0, f0 + .8));
+    show($("s3popup"), popupOn, 120 * (1 - pz) - 20 * seg(t, f0, f0 + per * 4), .92 + .08 * pz + .03 * seg(t, f0, f0 + per * 4));
+    const st = f0 + per * 4;
+    const sIn = easeOut(seg(t, st, st + .6));
+    show($("s3settings"), window_(t, st, S3[1], .45), 120 * (1 - sIn), .94 + .06 * sIn);
+    $("s3settings").querySelector("img").src = t >= f0 + per * 5 ? "assets/settings-ignore-dark.png" : "assets/settings-dark.png";
+    capEls.forEach((el, i) => {
+      const s = f0 + i * per, e = s + per;
+      const o = window_(t, s + .05, e + .02, .3);
+      show(el, o, 40 * (1 - easeOut(seg(t, s, s + .45))));
+      if (el.chip) {
+        const c = spring(seg(t, s + .35, s + 1.2));
+        show(el.chip, Math.min(o, seg(t, s + .35, s + .6)), 0, .8 + .2 * c, -40 * (1 - c));
+      }
+    });
+    dots.forEach((d, i) => d.classList.toggle("on", i === idx));
+    $("s3dots").style.opacity = window_(t, f0, S3[1]);
+
+    // 4 · call to action
+    const c0 = S4[0];
+    $("s4").style.opacity = t >= c0 - .1 ? 1 : 0;
+    const ip = spring(seg(t, c0, c0 + 1.2));
+    show($("s4icon"), Math.min(1, seg(t, c0, c0 + .35)), 80 * (1 - ip) + 8 * Math.sin(t * 2), .6 + .4 * ip);
+    show($("s4title"), easeOut(seg(t, c0 + .4, c0 + .9)), 40 * (1 - easeOut(seg(t, c0 + .4, c0 + 1))));
+    show($("s4free"), easeOut(seg(t, c0 + .8, c0 + 1.3)), 30 * (1 - easeOut(seg(t, c0 + .8, c0 + 1.4))));
+    const lp = spring(seg(t, c0 + 1.3, c0 + 2.3));
+    show($("s4link"), Math.min(1, seg(t, c0 + 1.3, c0 + 1.6)), 60 * (1 - lp), .85 + .15 * lp + .015 * Math.sin((t - c0) * 4) * seg(t, c0 + 2.5, c0 + 3));
+    show($("s4dl"), easeOut(seg(t, c0 + 2.1, c0 + 2.6)), 30 * (1 - easeOut(seg(t, c0 + 2.1, c0 + 2.7))));
+    show($("s4keys"), easeOut(seg(t, c0 + 2.8, c0 + 3.3)), 30 * (1 - easeOut(seg(t, c0 + 2.8, c0 + 3.4))));
+    // final fade to black
+    document.body.style.filter = `brightness(${1 - easeInOut(seg(t, 29.2, 30))})`;
+    return true;
+  };
+  window.ready = () => Promise.all([...document.images].map((i) => i.complete ? 1 : new Promise((r) => (i.onload = r))));
+</script>
+</body>
+</html>

@@ -1,0 +1,140 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  html, body { margin: 0; background: transparent; }
+  svg { display: block; width: 100vw; height: 100vh; }
+</style>
+</head>
+<body>
+<!--
+  Winddy icon: a stack of clipboard history cards on a sky-to-indigo squircle,
+  with gusts of wind on the front card (the "Wind" in Winddy).
+  ?variant=mac   macOS grid (squircle with margin and drop shadow)
+  ?variant=full  squircle fills the canvas (Windows .ico, social)
+  ?variant=small simplified glyph for 16–32 px
+  ?variant=paused grey tray icon
+-->
+<svg id="icon" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#6FD3FF" />
+      <stop offset="0.45" stop-color="#3B8BFF" />
+      <stop offset="1" stop-color="#4B3FE0" />
+    </linearGradient>
+    <radialGradient id="bgGlow" cx="0.3" cy="0.12" r="0.75">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.45" />
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" />
+      <stop offset="1" stop-color="#E9EEF8" />
+    </linearGradient>
+    <linearGradient id="clip" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5B6476" />
+      <stop offset="0.5" stop-color="#2E3442" />
+      <stop offset="1" stop-color="#1C2029" />
+    </linearGradient>
+    <linearGradient id="clipShine" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.55" />
+      <stop offset="1" stop-color="#FFFFFF" stop-opacity="0" />
+    </linearGradient>
+    <!-- user space units: straight strokes have a zero-height bounding box -->
+    <linearGradient id="wind" gradientUnits="userSpaceOnUse" x1="340" y1="0" x2="690" y2="0">
+      <stop offset="0" stop-color="#22C4F5" />
+      <stop offset="1" stop-color="#4F46E5" />
+    </linearGradient>
+    <linearGradient id="grey" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0" stop-color="#C9CED8" />
+      <stop offset="1" stop-color="#8A92A3" />
+    </linearGradient>
+    <filter id="iconShadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#0B1440" flood-opacity="0.35" />
+    </filter>
+    <filter id="cardShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#1B1F6B" flood-opacity="0.35" />
+    </filter>
+    <filter id="softShadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#0B1440" flood-opacity="0.35" />
+    </filter>
+    <clipPath id="squircleClip"><path id="squircleClipPath" /></clipPath>
+  </defs>
+
+  <g id="root">
+    <path id="squircle" fill="url(#bg)" />
+    <g clip-path="url(#squircleClip)">
+      <rect width="1024" height="1024" fill="url(#bgGlow)" />
+      <!-- faint breeze lines in the background -->
+      <g id="breeze" fill="none" stroke="#FFFFFF" stroke-linecap="round" opacity="0.16" stroke-width="18">
+        <path d="M -40 860 C 200 800 380 900 600 840 S 900 760 1100 800" />
+        <path d="M -40 930 C 240 880 420 960 660 910 S 940 850 1100 880" />
+      </g>
+    </g>
+
+    <g id="cards">
+      <!-- older history entries peeking out behind -->
+      <rect x="318" y="196" width="388" height="520" rx="56" fill="#FFFFFF" opacity="0.38" transform="rotate(-9 512 456)" />
+      <rect x="300" y="222" width="424" height="560" rx="58" fill="#FFFFFF" opacity="0.62" transform="rotate(6 512 502)" />
+      <!-- front card -->
+      <g filter="url(#cardShadow)">
+        <rect x="272" y="246" width="480" height="600" rx="64" fill="url(#paper)" />
+      </g>
+      <!-- gusts of wind -->
+      <g fill="none" stroke="url(#wind)" stroke-linecap="round" stroke-linejoin="round" stroke-width="40">
+        <path d="M 352 470 H 590 C 660 470 676 396 626 382 C 590 372 566 400 584 424" />
+        <path d="M 352 570 H 672" />
+        <path d="M 352 670 H 556 C 622 670 640 740 594 756 C 560 768 536 742 552 718" />
+      </g>
+      <!-- clip -->
+      <g filter="url(#softShadow)">
+        <rect x="402" y="196" width="220" height="104" rx="38" fill="url(#clip)" />
+        <rect x="414" y="204" width="196" height="40" rx="20" fill="url(#clipShine)" />
+        <rect x="477" y="222" width="70" height="26" rx="13" fill="#10131A" opacity="0.85" />
+      </g>
+    </g>
+
+    <!-- simplified glyph for tiny sizes -->
+    <g id="small" style="display:none">
+      <rect x="250" y="210" width="524" height="660" rx="90" fill="#FFFFFF" />
+      <g fill="none" stroke="url(#wind)" stroke-linecap="round" stroke-width="78">
+        <path d="M 360 470 H 664" />
+        <path d="M 360 640 H 600" />
+      </g>
+      <rect x="380" y="150" width="264" height="140" rx="56" fill="#1F2430" />
+    </g>
+  </g>
+</svg>
+<script>
+  // Continuous-corner rounded square (superellipse), like modern app icons.
+  function squircle(x, y, size, n = 5) {
+    const r = size / 2, cx = x + r, cy = y + r, pts = [];
+    for (let i = 0; i < 360; i++) {
+      const a = (i / 360) * Math.PI * 2, c = Math.cos(a), s = Math.sin(a);
+      pts.push([cx + r * Math.sign(c) * Math.abs(c) ** (2 / n), cy + r * Math.sign(s) * Math.abs(s) ** (2 / n)]);
+    }
+    return "M" + pts.map((p) => p.map((v) => v.toFixed(2)).join(" ")).join(" L") + " Z";
+  }
+  const variant = new URLSearchParams(location.search).get("variant") || "mac";
+  const inset = variant === "mac" ? 100 : variant === "small" || variant === "paused" ? 8 : 24;
+  const d = squircle(inset, inset, 1024 - inset * 2);
+  document.getElementById("squircle").setAttribute("d", d);
+  document.getElementById("squircleClipPath").setAttribute("d", d);
+  if (variant === "mac") document.getElementById("squircle").setAttribute("filter", "url(#iconShadow)");
+  if (variant !== "mac") {
+    // Without the macOS margin the artwork is scaled up to fill the tile.
+    const k = (1024 - inset * 2) / 824;
+    document.getElementById("cards").setAttribute("transform", `translate(512 512) scale(${k}) translate(-512 -512)`);
+  }
+  if (variant === "small" || variant === "paused") {
+    document.getElementById("cards").style.display = "none";
+    document.getElementById("breeze").style.display = "none";
+    document.getElementById("small").style.display = "";
+  }
+  if (variant === "paused") {
+    document.getElementById("squircle").setAttribute("fill", "url(#grey)");
+    document.querySelectorAll("#small path").forEach((p) => p.setAttribute("stroke", "#9AA2B1"));
+  }
+</script>
+</body>
+</html>

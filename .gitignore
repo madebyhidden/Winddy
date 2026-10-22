@@ -3,3 +3,5 @@ obj/
 publish/
 *.user
 .vs/
+promo/out/
+promo/reel/frames/

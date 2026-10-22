@@ -1,3 +1,5 @@
+<p align="center"><img src="docs/icon.png" width="160" alt="Winddy"></p>
+
 # Winddy
 
 Лёгкий менеджер буфера обмена для Windows — порт [Maccy](https://github.com/p0deje/Maccy) с macOS.
