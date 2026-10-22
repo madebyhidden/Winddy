@@ -185,6 +185,7 @@ public static class Loc
         ["NoPins"] = ("No pinned items yet. Press Alt+P in the history window to pin one.", "Закреплённых элементов пока нет. Нажмите Alt+P в окне истории, чтобы закрепить."),
         ["CommandLineHeader"] = ("Command line", "Командная строка"),
         ["CommandLineDescription"] = ("Winddy.exe get [N] · select N [--paste] [--plain] · delete N · clear [--all]", "Winddy.exe get [N] · select N [--paste] [--plain] · delete N · clear [--all]"),
+        ["FormatPlaceholder"] = ("Format name", "Название формата"),
         ["EditItemTitle"] = ("Edit item", "Изменить элемент"),
 
         // Updates

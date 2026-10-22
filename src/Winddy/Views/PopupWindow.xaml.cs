@@ -113,6 +113,8 @@ public partial class PopupWindow : Window
         {
             PlaceWindow();
             _positioning = false;
+            // The window appears under a resting cursor: don't let that steal the initial selection.
+            _lastMouse = Mouse.GetPosition(this);
             Activate();
             Keyboard.Focus(SearchBox);
         }));

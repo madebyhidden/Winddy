@@ -293,7 +293,7 @@
                                 <DockPanel Margin="52,8,0,0">
                                     <Button DockPanel.Dock="Right" Content="{l:Tr Reset}" Margin="8,0,0,0" Click="ResetFormats_Click" />
                                     <Button DockPanel.Dock="Right" Content="{l:Tr Add}" Margin="8,0,0,0" Click="AddFormat_Click" />
-                                    <ui:TextBox x:Name="FormatInput" PlaceholderText="Clipboard Viewer Ignore" KeyDown="FormatInput_KeyDown" />
+                                    <ui:TextBox x:Name="FormatInput" PlaceholderText="{l:Tr FormatPlaceholder}" KeyDown="FormatInput_KeyDown" />
                                 </DockPanel>
                             </StackPanel>
                         </Border>
