@@ -23,7 +23,8 @@ public partial class PopupWindow : Window
     private readonly DispatcherTimer _previewTimer = new();
     private HistoryItemViewModel? _selected;
     private IntPtr _previousWindow;
-    private Point _lastMouse = new(double.NaN, double.NaN);
+    // Screen position of the cursor at the last hover check; the window moving under a resting cursor is not a hover.
+    private Native.POINT _lastCursor;
     private bool _cycleMode;
     private bool _positioning;
     private bool _anchorAtCursor;
@@ -102,6 +103,7 @@ public partial class PopupWindow : Window
         SizeToContent = SizeToContent.Height;
 
         _positioning = true;
+        Native.GetCursorPos(out _lastCursor);
         Left = -32000;
         Top = -32000;
         Show();
@@ -114,7 +116,7 @@ public partial class PopupWindow : Window
             PlaceWindow();
             _positioning = false;
             // The window appears under a resting cursor: don't let that steal the initial selection.
-            _lastMouse = Mouse.GetPosition(this);
+            Native.GetCursorPos(out _lastCursor);
             Activate();
             Keyboard.Focus(SearchBox);
         }));
@@ -424,9 +426,9 @@ public partial class PopupWindow : Window
     private void Row_MouseMove(object sender, MouseEventArgs e)
     {
         // Only react to real mouse movement, not to the list scrolling under a resting cursor.
-        var p = e.GetPosition(this);
-        if (p == _lastMouse) return;
-        _lastMouse = p;
+        Native.GetCursorPos(out var cursor);
+        if (cursor.X == _lastCursor.X && cursor.Y == _lastCursor.Y) return;
+        _lastCursor = cursor;
         if (((FrameworkElement)sender).DataContext is HistoryItemViewModel vm) Select(vm);
     }
 
