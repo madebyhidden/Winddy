@@ -10,42 +10,39 @@
         ShowActivated="True"
         Topmost="True"
         SizeToContent="Height"
-        MinWidth="280" MinHeight="80"
+        MinWidth="260" MinHeight="80"
         Width="450"
-        Background="{DynamicResource ApplicationBackgroundBrush}"
-        BorderThickness="0"
-        FontFamily="{StaticResource UiFont}"
-        FontSize="14"
-        Foreground="{DynamicResource TextFillColorPrimaryBrush}"
-        UseLayoutRounding="True">
+        Background="{DynamicResource WindowBackground}"
+        BorderBrush="{DynamicResource WindowBorder}"
+        BorderThickness="1"
+        FontFamily="Segoe UI Variable Text, Segoe UI"
+        FontSize="13"
+        Foreground="{DynamicResource Foreground}"
+        UseLayoutRounding="True"
+        TextOptions.TextFormattingMode="Display">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="0" ResizeBorderThickness="6" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
+        <WindowChrome CaptionHeight="0" ResizeBorderThickness="5" GlassFrameThickness="0" CornerRadius="0" UseAeroCaptionButtons="False" />
     </WindowChrome.WindowChrome>
 
     <Window.Resources>
-        <!-- Menu-like row used by the footer (Windows 11 context menu metrics) -->
         <Style x:Key="FooterRow" TargetType="Border">
-            <Setter Property="Height" Value="34" />
-            <Setter Property="Padding" Value="12,0" />
-            <Setter Property="Margin" Value="4,1" />
-            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="Padding" Value="8,4" />
+            <Setter Property="Margin" Value="5,0" />
+            <Setter Property="CornerRadius" Value="5" />
             <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Cursor" Value="Hand" />
             <Style.Triggers>
                 <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
+                    <Setter Property="Background" Value="{DynamicResource SelectionBackground}" />
+                    <Setter Property="TextElement.Foreground" Value="{DynamicResource SelectionForeground}" />
                 </Trigger>
             </Style.Triggers>
         </Style>
-        <Style x:Key="FooterIcon" TargetType="TextBlock" BasedOn="{StaticResource Glyph}">
-            <Setter Property="DockPanel.Dock" Value="Left" />
-            <Setter Property="Margin" Value="0,0,12,0" />
-        </Style>
-        <Style x:Key="Accelerator" TargetType="TextBlock">
-            <Setter Property="DockPanel.Dock" Value="Right" />
-            <Setter Property="Margin" Value="16,0,0,0" />
-            <Setter Property="FontSize" Value="12" />
+        <Style x:Key="ShortcutText" TargetType="TextBlock">
+            <Setter Property="Opacity" Value="0.6" />
+            <Setter Property="Margin" Value="12,0,0,0" />
             <Setter Property="VerticalAlignment" Value="Center" />
-            <Setter Property="Foreground" Value="{DynamicResource TextFillColorSecondaryBrush}" />
+            <Setter Property="FontSize" Value="12" />
         </Style>
     </Window.Resources>
 
@@ -57,60 +54,43 @@
         </Grid.RowDefinitions>
 
         <!-- Header: title + search -->
-        <Grid x:Name="Header" Grid.Row="0" Margin="12,12,12,8" Background="Transparent" MouseLeftButtonDown="Header_MouseLeftButtonDown">
+        <Grid x:Name="Header" Grid.Row="0" Margin="10,8,10,6" Background="Transparent" MouseLeftButtonDown="Header_MouseLeftButtonDown">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
             </Grid.ColumnDefinitions>
-            <StackPanel x:Name="TitleText" Orientation="Horizontal" VerticalAlignment="Center" Margin="2,0,12,0">
-                <Image Source="pack://application:,,,/Assets/Winddy.ico" Width="18" Height="18" Margin="0,0,8,0" />
-                <TextBlock Text="{l:Tr AppTitle}" FontWeight="SemiBold" VerticalAlignment="Center" />
-            </StackPanel>
-            <!-- Fluent text box: control fill, hairline stroke, accent underline (the box always has focus) -->
-            <Border Grid.Column="1" Height="32" CornerRadius="4" Background="{DynamicResource ControlFillColorDefaultBrush}"
-                    BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1">
+            <TextBlock x:Name="TitleText" Text="{l:Tr AppTitle}" FontWeight="SemiBold" VerticalAlignment="Center" Margin="2,0,10,0" />
+            <Border Grid.Column="1" Background="{DynamicResource SearchBackground}" BorderBrush="{DynamicResource WindowBorder}" BorderThickness="1" CornerRadius="6">
                 <Grid>
                     <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" />
                         <ColumnDefinition Width="*" />
                         <ColumnDefinition Width="Auto" />
-                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <TextBlock x:Name="Placeholder" Text="{l:Tr SearchPlaceholder}" Foreground="{DynamicResource TextFillColorTertiaryBrush}"
-                               VerticalAlignment="Center" Margin="11,0,0,1" IsHitTestVisible="False" />
-                    <TextBox x:Name="SearchBox" Background="Transparent" BorderThickness="0" Padding="0" Margin="10,0,4,1"
-                             VerticalAlignment="Center" FontSize="14" TextChanged="SearchBox_TextChanged"
-                             Foreground="{DynamicResource TextFillColorPrimaryBrush}" CaretBrush="{DynamicResource TextFillColorPrimaryBrush}"
-                             SelectionBrush="{DynamicResource SystemAccentColorPrimaryBrush}">
-                        <TextBox.Template>
-                            <ControlTemplate TargetType="TextBox">
-                                <ScrollViewer x:Name="PART_ContentHost" Focusable="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Hidden" />
-                            </ControlTemplate>
-                        </TextBox.Template>
-                    </TextBox>
-                    <Button x:Name="ClearSearchButton" Grid.Column="1" Style="{StaticResource IconButton}" Width="28" Height="24" FontSize="10"
-                            Content="&#xE894;" Visibility="Collapsed" Click="ClearSearchButton_Click" />
-                    <TextBlock Grid.Column="2" Text="&#xE721;" Style="{StaticResource Glyph}" FontSize="13" Margin="4,0,11,0"
-                               Foreground="{DynamicResource TextFillColorSecondaryBrush}" />
-                    <Border Grid.ColumnSpan="3" Height="2" VerticalAlignment="Bottom" Margin="-1,0,-1,-1" CornerRadius="0,0,4,4"
-                            Background="{DynamicResource SystemAccentColorPrimaryBrush}" />
+                    <TextBlock Text="&#xE721;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="12" Opacity="0.55" VerticalAlignment="Center" Margin="8,0,2,0" />
+                    <TextBlock x:Name="Placeholder" Grid.Column="1" Text="{l:Tr SearchPlaceholder}" Opacity="0.45" VerticalAlignment="Center" Margin="6,0" IsHitTestVisible="False" />
+                    <TextBox x:Name="SearchBox" Grid.Column="1" BorderThickness="0" Background="Transparent" Padding="4,4"
+                             Foreground="{DynamicResource Foreground}" CaretBrush="{DynamicResource Foreground}"
+                             VerticalContentAlignment="Center" TextChanged="SearchBox_TextChanged" />
+                    <Button x:Name="ClearSearchButton" Grid.Column="2" Content="&#xE711;" FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets" FontSize="10"
+                            Background="Transparent" BorderThickness="0" Padding="8,0" Opacity="0.6" Focusable="False" Cursor="Hand"
+                            Foreground="{DynamicResource Foreground}" Visibility="Collapsed" Click="ClearSearchButton_Click" />
                 </Grid>
             </Border>
         </Grid>
 
         <!-- Paste stack banner -->
-        <Border x:Name="StackBanner" Grid.Row="1" VerticalAlignment="Top" Margin="8,0,8,4" Padding="12,4,6,4" CornerRadius="4"
-                Background="{DynamicResource CardBackgroundFillColorDefaultBrush}" BorderBrush="{DynamicResource CardStrokeColorDefaultBrush}"
-                BorderThickness="1" Visibility="Collapsed" Panel.ZIndex="1">
+        <Border x:Name="StackBanner" Grid.Row="1" VerticalAlignment="Top" Margin="5,0,5,4" Padding="10,5" CornerRadius="5"
+                Background="{DynamicResource Separator}" Visibility="Collapsed" Panel.ZIndex="1">
             <DockPanel>
-                <Button DockPanel.Dock="Right" Content="{l:Tr StopPasteStack}" Padding="10,3" Click="StopStack_Click" Focusable="False" />
-                <TextBlock Style="{StaticResource Glyph}" Text="&#xE8C8;" Foreground="{DynamicResource AccentTextFillColorPrimaryBrush}" Margin="0,0,10,0" />
-                <TextBlock x:Name="StackText" VerticalAlignment="Center" FontSize="13" TextTrimming="CharacterEllipsis" />
+                <Button DockPanel.Dock="Right" Content="{l:Tr StopPasteStack}" Padding="8,1" Click="StopStack_Click" Focusable="False" />
+                <TextBlock x:Name="StackText" VerticalAlignment="Center" />
             </DockPanel>
         </Border>
 
         <!-- History list -->
-        <ListBox x:Name="List" Grid.Row="1" Focusable="False" BorderThickness="0" Background="Transparent" Padding="0,0,0,2"
-                 Foreground="{DynamicResource TextFillColorPrimaryBrush}"
+        <ListBox x:Name="List" Grid.Row="1" Focusable="False" BorderThickness="0" Background="Transparent" Padding="0"
+                 Foreground="{DynamicResource Foreground}"
                  ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                  VirtualizingPanel.IsVirtualizing="True" VirtualizingPanel.VirtualizationMode="Recycling"
                  VirtualizingPanel.ScrollUnit="Pixel">
@@ -131,56 +111,44 @@
             <ListBox.ItemTemplate>
                 <DataTemplate>
                     <StackPanel>
-                        <Border x:Name="Row" Margin="4,1" MinHeight="34" CornerRadius="4" Background="Transparent"
+                        <Border x:Name="Row" Margin="5,0" Padding="8,3" CornerRadius="5" Background="Transparent"
                                 MouseMove="Row_MouseMove" MouseLeftButtonUp="Row_MouseLeftButtonUp" ToolTipService.InitialShowDelay="1500">
                             <Border.ContextMenu>
                                 <ContextMenu Opened="RowMenu_Opened">
-                                    <MenuItem Header="{l:Tr Pin}" Click="PinMenuItem_Click">
-                                        <MenuItem.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE718;" /></MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="{l:Tr EditItem}" Click="EditMenuItem_Click">
-                                        <MenuItem.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE70F;" /></MenuItem.Icon>
-                                    </MenuItem>
-                                    <MenuItem Header="{l:Tr Delete}" Click="DeleteMenuItem_Click">
-                                        <MenuItem.Icon><TextBlock Style="{StaticResource Glyph}" Text="&#xE74D;" /></MenuItem.Icon>
-                                    </MenuItem>
+                                    <MenuItem x:Name="PinMenuItem" Header="{l:Tr Pin}" Click="PinMenuItem_Click" />
+                                    <MenuItem Header="{l:Tr EditItem}" Click="EditMenuItem_Click" />
+                                    <MenuItem Header="{l:Tr Delete}" Click="DeleteMenuItem_Click" />
                                 </ContextMenu>
                             </Border.ContextMenu>
                             <Grid>
-                                <!-- Windows 11 selection indicator -->
-                                <Border x:Name="Pill" Width="3" Height="16" CornerRadius="1.5" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                        Background="{DynamicResource SystemAccentColorPrimaryBrush}" Visibility="Collapsed" />
-                                <Grid Margin="12,5,10,5">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="*" />
-                                        <ColumnDefinition Width="Auto" />
-                                        <ColumnDefinition Width="Auto" />
-                                    </Grid.ColumnDefinitions>
-                                    <Image Source="{Binding AppIcon}" Visibility="{Binding AppIconVisibility}" Width="16" Height="16" Margin="0,0,10,0" VerticalAlignment="Center" />
-                                    <Border Grid.Column="1" Background="{Binding Swatch}" Visibility="{Binding SwatchVisibility}" Width="14" Height="14" CornerRadius="3"
-                                            BorderBrush="{DynamicResource ControlStrokeColorDefaultBrush}" BorderThickness="1" Margin="0,0,10,0" VerticalAlignment="Center" />
-                                    <c:HighlightTextBlock Grid.Column="2" SourceText="{Binding Title}" Ranges="{Binding Ranges}"
-                                                          Visibility="{Binding TitleVisibility}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
-                                    <Border Grid.Column="2" Visibility="{Binding ImageVisibility}" HorizontalAlignment="Left" CornerRadius="3" ClipToBounds="True">
-                                        <Image Source="{Binding Thumbnail}" MaxHeight="{Binding ImageMaxHeight}" Stretch="Uniform" StretchDirection="DownOnly" />
-                                    </Border>
-                                    <Border Grid.Column="3" Visibility="{Binding BadgeVisibility}" Background="{DynamicResource SystemAccentColorPrimaryBrush}"
-                                            CornerRadius="9" MinWidth="18" Height="18" Padding="5,0" Margin="10,0,0,0" VerticalAlignment="Center">
-                                        <TextBlock Text="{Binding Badge}" FontSize="11" FontWeight="SemiBold" Foreground="{DynamicResource TextOnAccentFillColorPrimaryBrush}"
-                                                   HorizontalAlignment="Center" VerticalAlignment="Center" />
-                                    </Border>
-                                    <TextBlock Grid.Column="4" Text="{Binding Shortcut}" Style="{StaticResource Accelerator}" />
-                                </Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="Auto" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="Auto" />
+                                </Grid.ColumnDefinitions>
+                                <Image Source="{Binding AppIcon}" Visibility="{Binding AppIconVisibility}" Width="16" Height="16" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                <Border Grid.Column="1" Background="{Binding Swatch}" Visibility="{Binding SwatchVisibility}" Width="12" Height="12" CornerRadius="3"
+                                        BorderBrush="{DynamicResource WindowBorder}" BorderThickness="1" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                <c:HighlightTextBlock x:Name="TitleBlock" Grid.Column="2" SourceText="{Binding Title}" Ranges="{Binding Ranges}"
+                                                      Visibility="{Binding TitleVisibility}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" Padding="0,1" />
+                                <Image Grid.Column="2" Source="{Binding Thumbnail}" Visibility="{Binding ImageVisibility}" MaxHeight="{Binding ImageMaxHeight}"
+                                       HorizontalAlignment="Left" Stretch="Uniform" StretchDirection="DownOnly" Margin="0,2" />
+                                <Border Grid.Column="3" Visibility="{Binding BadgeVisibility}" Background="{DynamicResource SelectionForeground}"
+                                        CornerRadius="8" MinWidth="16" Height="16" Padding="4,0" Margin="8,0,0,0" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                    <TextBlock Text="{Binding Badge}" FontSize="10" FontWeight="SemiBold" Foreground="{DynamicResource SelectionBackground}"
+                                               HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                </Border>
+                                <TextBlock x:Name="ShortcutBlock" Grid.Column="3" Text="{Binding Shortcut}" Opacity="0.55" Margin="12,0,0,0" FontSize="12" VerticalAlignment="Center" />
                             </Grid>
                         </Border>
-                        <Border Height="1" Margin="12,4" Background="{DynamicResource DividerStrokeColorDefaultBrush}" Visibility="{Binding SeparatorVisibility}" />
+                        <Border Height="1" Margin="10,4" Background="{DynamicResource Separator}" Visibility="{Binding SeparatorVisibility}" />
                     </StackPanel>
                     <DataTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsSelected}" Value="True">
-                            <Setter TargetName="Row" Property="Background" Value="{DynamicResource SubtleFillColorSecondaryBrush}" />
-                            <Setter TargetName="Pill" Property="Visibility" Value="Visible" />
+                            <Setter TargetName="Row" Property="Background" Value="{DynamicResource SelectionBackground}" />
+                            <Setter TargetName="Row" Property="TextElement.Foreground" Value="{DynamicResource SelectionForeground}" />
+                            <Setter TargetName="ShortcutBlock" Property="Opacity" Value="0.8" />
                         </DataTrigger>
                     </DataTemplate.Triggers>
                 </DataTemplate>
@@ -189,62 +157,65 @@
 
         <!-- Footer -->
         <StackPanel x:Name="Footer" Grid.Row="2" Margin="0,0,0,6">
-            <Border Height="1" Margin="0,4,0,4" Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
-            <Border x:Name="ClearRow" Style="{StaticResource FooterRow}" MouseLeftButtonUp="Clear_Click" ToolTip="{l:Tr ClearTooltip}">
+            <Border Height="1" Margin="10,4,10,4" Background="{DynamicResource Separator}" />
+            <Border Style="{StaticResource FooterRow}" MouseLeftButtonUp="Clear_Click" x:Name="ClearRow" ToolTip="{l:Tr ClearTooltip}">
                 <DockPanel>
-                    <TextBlock Style="{StaticResource FooterIcon}" Text="&#xE894;" />
-                    <TextBlock x:Name="ClearShortcut" Style="{StaticResource Accelerator}" Text="Ctrl+Alt+Backspace" />
-                    <TextBlock x:Name="ClearLabel" Text="{l:Tr Clear}" VerticalAlignment="Center" />
+                    <TextBlock x:Name="ClearShortcut" DockPanel.Dock="Right" Style="{StaticResource ShortcutText}" Text="Ctrl+Alt+Backspace" />
+                    <TextBlock x:Name="ClearLabel" Text="{l:Tr Clear}" />
                 </DockPanel>
             </Border>
             <Border Style="{StaticResource FooterRow}" MouseLeftButtonUp="Preferences_Click">
                 <DockPanel>
-                    <TextBlock Style="{StaticResource FooterIcon}" Text="&#xE713;" />
-                    <TextBlock Style="{StaticResource Accelerator}" Text="Ctrl+," />
-                    <TextBlock Text="{l:Tr Preferences}" VerticalAlignment="Center" />
+                    <TextBlock DockPanel.Dock="Right" Style="{StaticResource ShortcutText}" Text="Ctrl+," />
+                    <TextBlock Text="{l:Tr Preferences}" />
                 </DockPanel>
             </Border>
             <Border Style="{StaticResource FooterRow}" MouseLeftButtonUp="About_Click" ToolTip="{l:Tr AboutTooltip}">
-                <DockPanel>
-                    <TextBlock Style="{StaticResource FooterIcon}" Text="&#xE946;" />
-                    <TextBlock Text="{l:Tr About}" VerticalAlignment="Center" />
-                </DockPanel>
+                <TextBlock Text="{l:Tr About}" />
             </Border>
             <Border Style="{StaticResource FooterRow}" MouseLeftButtonUp="Quit_Click" ToolTip="{l:Tr QuitTooltip}">
                 <DockPanel>
-                    <TextBlock Style="{StaticResource FooterIcon}" Text="&#xE7E8;" />
-                    <TextBlock Style="{StaticResource Accelerator}" Text="Ctrl+Q" />
-                    <TextBlock Text="{l:Tr Quit}" VerticalAlignment="Center" />
+                    <TextBlock DockPanel.Dock="Right" Style="{StaticResource ShortcutText}" Text="Ctrl+Q" />
+                    <TextBlock Text="{l:Tr Quit}" />
                 </DockPanel>
             </Border>
         </StackPanel>
 
-        <!-- Preview flyout -->
+        <!-- Preview -->
         <Popup x:Name="PreviewPopup" Grid.RowSpan="3" PlacementTarget="{Binding ElementName=Root}" Placement="Right"
-               HorizontalOffset="4" AllowsTransparency="True" StaysOpen="True" Focusable="False">
-            <Border Margin="8" Background="{DynamicResource SolidBackgroundFillColorBaseBrush}" BorderBrush="{DynamicResource SurfaceStrokeColorFlyoutBrush}"
-                    BorderThickness="1" CornerRadius="8" Padding="16,12,16,14" MaxWidth="520" MinWidth="260">
-                <Border.Effect>
-                    <DropShadowEffect BlurRadius="16" ShadowDepth="4" Direction="270" Opacity="0.28" />
-                </Border.Effect>
+               HorizontalOffset="6" AllowsTransparency="True" StaysOpen="True" Focusable="False">
+            <Border Background="{DynamicResource WindowBackground}" BorderBrush="{DynamicResource WindowBorder}" BorderThickness="1"
+                    CornerRadius="8" Padding="12" MaxWidth="520" MinWidth="220">
                 <StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,-4,-8,8">
-                        <Button x:Name="CopyTextButton" Style="{StaticResource IconButton}" Content="&#xE8C8;" Click="CopyText_Click" />
-                        <Button x:Name="PinButton" Style="{StaticResource IconButton}" Content="&#xE718;" Click="PinButton_Click" />
-                        <Button x:Name="EditButton" Style="{StaticResource IconButton}" Content="&#xE70F;" Click="EditButton_Click" />
-                        <Button x:Name="DeleteButton" Style="{StaticResource IconButton}" Content="&#xE74D;" Click="DeleteButton_Click" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,-4,-4,6">
+                        <StackPanel.Resources>
+                            <Style TargetType="Button">
+                                <Setter Property="FontFamily" Value="Segoe Fluent Icons, Segoe MDL2 Assets" />
+                                <Setter Property="FontSize" Value="13" />
+                                <Setter Property="Width" Value="28" />
+                                <Setter Property="Height" Value="26" />
+                                <Setter Property="Margin" Value="2,0,0,0" />
+                                <Setter Property="Focusable" Value="False" />
+                                <Setter Property="Cursor" Value="Hand" />
+                                <Setter Property="Foreground" Value="{DynamicResource Foreground}" />
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="BorderThickness" Value="0" />
+                            </Style>
+                        </StackPanel.Resources>
+                        <Button x:Name="CopyTextButton" Content="&#xE8C8;" Click="CopyText_Click" />
+                        <Button x:Name="PinButton" Content="&#xE718;" Click="PinButton_Click" />
+                        <Button x:Name="EditButton" Content="&#xE70F;" Click="EditButton_Click" />
+                        <Button x:Name="DeleteButton" Content="&#xE74D;" Click="DeleteButton_Click" />
                     </StackPanel>
                     <ScrollViewer MaxHeight="420" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <Grid>
-                            <TextBlock x:Name="PreviewText" TextWrapping="Wrap" FontFamily="{StaticResource MonoFont}" FontSize="12"
-                                       Foreground="{DynamicResource TextFillColorPrimaryBrush}" />
-                            <Border x:Name="PreviewImageFrame" CornerRadius="4" ClipToBounds="True" HorizontalAlignment="Left">
-                                <Image x:Name="PreviewImage" Stretch="Uniform" StretchDirection="DownOnly" MaxHeight="400" />
-                            </Border>
+                            <TextBlock x:Name="PreviewText" TextWrapping="Wrap" FontFamily="Cascadia Mono, Consolas" FontSize="12"
+                                       Foreground="{DynamicResource Foreground}" />
+                            <Image x:Name="PreviewImage" Stretch="Uniform" StretchDirection="DownOnly" MaxHeight="400" HorizontalAlignment="Left" />
                         </Grid>
                     </ScrollViewer>
-                    <Border Height="1" Margin="0,12" Background="{DynamicResource DividerStrokeColorDefaultBrush}" />
-                    <TextBlock x:Name="PreviewInfo" Foreground="{DynamicResource TextFillColorSecondaryBrush}" FontSize="12" LineHeight="19" TextWrapping="Wrap" />
+                    <Border Height="1" Margin="0,10" Background="{DynamicResource Separator}" />
+                    <TextBlock x:Name="PreviewInfo" Foreground="{DynamicResource SecondaryForeground}" FontSize="12" LineHeight="18" TextWrapping="Wrap" />
                 </StackPanel>
             </Border>
         </Popup>

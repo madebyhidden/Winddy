@@ -85,6 +85,25 @@ public static class Theme
     {
         var theme = IsDark ? Wpf.Ui.Appearance.ApplicationTheme.Dark : Wpf.Ui.Appearance.ApplicationTheme.Light;
         Wpf.Ui.Appearance.ApplicationThemeManager.Apply(theme, Wpf.Ui.Controls.WindowBackdropType.Mica, true);
+        ApplyPopupBrushes(Application.Current.Resources);
+    }
+
+    /// <summary>The history panel keeps its own Maccy-like palette, separate from the Fluent windows.</summary>
+    private static void ApplyPopupBrushes(ResourceDictionary resources)
+    {
+        var dark = IsDark;
+        void Set(string key, string light, string darkValue) =>
+            resources[key] = new SolidColorBrush((System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(dark ? darkValue : light)!);
+
+        Set("WindowBackground", "#F7F7F8", "#2B2B2D");
+        Set("WindowBorder", "#D0D0D4", "#4A4A4E");
+        Set("Foreground", "#1C1C1E", "#ECECEE");
+        Set("SecondaryForeground", "#6E6E73", "#9A9AA0");
+        Set("SelectionBackground", "#2563EB", "#2F6BEA");
+        Set("SelectionForeground", "#FFFFFF", "#FFFFFF");
+        Set("SearchBackground", "#FFFFFF", "#38383B");
+        Set("Separator", "#E0E0E4", "#3E3E42");
+        Set("HighlightColor", "#D97706", "#FBBF24");
     }
 
     /// <summary>Windows 11 22H2+ can draw a system acrylic backdrop behind a window.</summary>
